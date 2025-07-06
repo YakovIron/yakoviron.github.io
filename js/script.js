@@ -20,7 +20,8 @@ const textureLoader = new THREE.TextureLoader();
 //SECTION import all texture
 const getTexture = (name) => textureLoader.load(`./image/${name}`);
 const starTexture = getTexture("stars.jpg");
-const sunTexture = getTexture("sun.jpg");
+const milkyTexture = getTexture("8k_stars_milky_way.jpg");
+const sunTexture = getTexture("8K_sun.jpg");
 const mercuryTexture = getTexture("mercury.jpg");
 const venusTexture = getTexture("venus.jpg");
 const earthTexture = getTexture("8k_earth.jpg");
@@ -314,6 +315,14 @@ const createScene = (view, isshow) => {
   scene.background = cubeTexture;
   //////////////////////////////////////
 
+  const skyGeo = new THREE.SphereGeometry(35000, 32, 32); // large radius
+  const skyMat = new THREE.MeshBasicMaterial({
+    map: milkyTexture,
+    side: THREE.BackSide // render inside
+  });
+  const sky = new THREE.Mesh(skyGeo, skyMat);
+  scene.add(sky);
+
   //////////////////////////////////////
   //NOTE Perspective Camera
   const camera = new THREE.PerspectiveCamera(
@@ -441,8 +450,9 @@ const createScene = (view, isshow) => {
   const sungeo = new THREE.SphereGeometry(sunData[view], 50, 50);
   const sunMaterial = new THREE.MeshStandardMaterial({
     map: sunTexture,
-    emissive: new THREE.Color("#ff9900"), 
-    emissiveIntensity: 0.7,
+    emissiveMap: sunTexture,
+    emissive: new THREE.Color("white"), 
+    emissiveIntensity: 5,
   });
   const sun = new THREE.Mesh(sungeo, sunMaterial);
   scene.add(sun);
@@ -453,7 +463,7 @@ const createScene = (view, isshow) => {
     color: "#ff9900",
     transparent: true,
     blending: THREE.AdditiveBlending,
-    opacity: 0.7,
+    opacity: 1,
   });
   const sprite = new THREE.Sprite(spriteMaterial);
   sprite.scale.set(sunData[view] * 6, sunData[view] * 5, 1); 
