@@ -14,23 +14,24 @@ body {
     margin: 0px;
 }
 
+/* Loading screen and spinner styles stay the same */
 #loading-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #000; /* black background */
+  background-color: #000;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* keep on top */
+  z-index: 9999;
 }
 
 .loader {
   border: 8px solid #f3f3f3;
-  border-top: 8px solid #3498db; /* blue spinner */
+  border-top: 8px solid #3498db;
   border-radius: 50%;
   width: 80px;
   height: 80px;
@@ -58,6 +59,7 @@ a:active {
     font-weight: bolder;
 }
 
+/* Buttons and labels */
 .change-scene {
     position: fixed;
     padding: 4px 20px;
@@ -99,6 +101,7 @@ a:active {
     margin-bottom: 10px;
 }
 
+/* Info panel */
 .show-info-container {
     display: flex;
     background-color: #000000;
@@ -113,12 +116,6 @@ a:active {
 
 .show-info-container[show=false] {
     height: 20px !important;
-}
-
-@media only screen and (max-width: 700px) {
-    .show-info-container {
-        display: none !important;
-    }
 }
 
 .mul-info-key-value {
@@ -140,7 +137,6 @@ a:active {
 .info-value {
     margin-left: 10px;
 }
-
 
 .info-value.description,
 .mul-info-key-value {
@@ -164,10 +160,11 @@ a:active {
     opacity: 0;
     font-size: 0px;
     transition: font-size 0.33s, opacity 0.33s;
+    font-family: Assistant;
 }
 
 .show-info-container:hover>.hide-info {
-    background-color: red;
+    background-color: rgba(0, 0, 0, 0.8);
     opacity: 1;
     font-size: 2em;
 }
@@ -181,4 +178,50 @@ a:active {
 .show-info-container[show=false]>.hide-info,
 .show-info-container[show=true]>.show-info {
     display: none;
+}
+
+/* Existing mobile portrait rule: completely hide the info panel on narrow screens */
+@media only screen and (max-width: 700px) and (orientation: portrait) {
+    .show-info-container {
+        width: 100%;
+    }
+}
+
+/* New: Optimize for mobile landscape (horizontal) */
+@media only screen and (max-width: 900px) and (orientation: landscape) {
+    .show-info-container {
+        width: 90%; /* Make it almost full width */
+        left: 5%;   /* center horizontally */
+        bottom: 10px;
+        font-size: 14px;
+    }
+
+    .info-key {
+        width: auto; /* Let keys take dynamic width */
+        margin: 1px 5px;
+        font-size: 14px;
+    }
+
+    .info-value {
+        font-size: 14px;
+    }
+
+    .change-scene {
+        bottom: 10px;
+        right: 10px;
+        padding: 3px 10px;
+        font-size: 14px;
+    }
+
+    .change-scene-select {
+        width: 20px;
+        height: 20px;
+        margin: 0px 3px 0px 5px;
+    }
+
+    .created-by {
+        top: 10px;
+        left: 5px;
+        font-size: 12px;
+    }
 }
