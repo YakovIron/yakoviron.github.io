@@ -316,32 +316,33 @@ const createScene = (view, isshow) => {
   //////////////////////////////////////
   //NOTE - Nebulae  
   //////////////////////////////////////
-  
+    
   const nebulaCount = 10;
+  const textureLoader = new THREE.TextureLoader();
+  const nebulaTexture = textureLoader.load('./textures/nebula.png'); 
+  // Use a good PNG with alpha: cloud, noise, or hand-painted nebula shape
 
   for (let i = 0; i < nebulaCount; i++) {
-    const nebulaGeometry = new THREE.SphereGeometry(
-      500 + Math.random() * 800, // large, soft shapes
-      32,
-      32
-    );
-
+    const size = 2000 + Math.random() * 2000; // large and fluffy
+    const nebulaGeometry = new THREE.PlaneGeometry(size, size);
+    
     const nebulaMaterial = new THREE.MeshBasicMaterial({
+      map: nebulaTexture,
       color: new THREE.Color(
-        Math.random(), // R
-        Math.random(), // G
-        Math.random()  // B
+        0.5 + Math.random() * 0.5, // brighten up: avoid very dark nebulae
+        0.5 + Math.random() * 0.5,
+        0.5 + Math.random() * 0.5
       ),
       transparent: true,
-      opacity: 0.1 + Math.random() * 0.2, // low opacity
-      depthWrite: false, // avoid z-buffer fighting
+      opacity: 0.2 + Math.random() * 0.3,
+      depthWrite: false,
       blending: THREE.AdditiveBlending,
-      side: THREE.BackSide, // optionally render inside-out
+      side: THREE.DoubleSide,
     });
 
     const nebulaMesh = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
 
-    // Position them randomly far away in the star sphere
+    // Position far away in the star sphere
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos((Math.random() * 2) - 1);
     const distance = radius - 2000 - Math.random() * 5000;
@@ -352,7 +353,7 @@ const createScene = (view, isshow) => {
 
     nebulaMesh.position.set(x, y, z);
 
-    // Optionally rotate the nebula randomly
+    // Random rotation so planes don't all face the same way
     nebulaMesh.rotation.set(
       Math.random() * Math.PI,
       Math.random() * Math.PI,
@@ -361,6 +362,7 @@ const createScene = (view, isshow) => {
 
     scene.add(nebulaMesh);
   }
+
 
   //////////////////////////////////////
   //NOTE - sun
@@ -481,7 +483,7 @@ const createScene = (view, isshow) => {
     "Natural Lighting": true,
     "Show path": true,
     speed: 1,
-    focus: "sun",
+    focus: "earth",
   };
   gui.add(options, "Natural Lighting").onChange((e) => {
     ambientLight.intensity = e ? 0.15 : 0.75;
