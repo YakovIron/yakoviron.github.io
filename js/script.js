@@ -23,10 +23,12 @@ const starTexture = getTexture("stars.jpg");
 const sunTexture = getTexture("sun.jpg");
 const mercuryTexture = getTexture("mercury.jpg");
 const venusTexture = getTexture("venus.jpg");
-const earthTexture = getTexture("earth.jpg");
+const earthTexture = getTexture("8k_earth.jpg");
+const earthNormalMap = getTexture("8k_earth_normal_map.jpg");
+const earthNightMap = getTexture("8k_earth_nightmap.jpg"); 
 const marsTexture = getTexture("mars.jpg");
-const jupiterTexture = getTexture("jupiter.jpg");
-const saturnTexture = getTexture("saturn.jpg");
+const jupiterTexture = getTexture("8k_jupiter.jpg");
+const saturnTexture = getTexture("8k_saturn.jpg");
 const uranusTexture = getTexture("uranus.jpg");
 const neptuneTexture = getTexture("neptune.jpg");
 const plutoTexture = getTexture("pluto.jpg");
@@ -447,21 +449,21 @@ const createScene = (view, isshow) => {
   planetData.store[view].sun = sun;
   //////////////////////////////////////
   const spriteMaterial = new THREE.SpriteMaterial({
-    map: textureLoader.load('./image/radial_gradiant.png'), // you need a radial glow texture
+    map: textureLoader.load('./image/radial_gradiant.png'), 
     color: "#ff9900",
     transparent: true,
     blending: THREE.AdditiveBlending,
     opacity: 0.7,
   });
   const sprite = new THREE.Sprite(spriteMaterial);
-  sprite.scale.set(sunData[view] * 6, sunData[view] * 5, 1); // adjust the size
+  sprite.scale.set(sunData[view] * 6, sunData[view] * 5, 1); 
   sun.add(sprite);
 
   //////////////////////////////////////
   //NOTE - sun light (point light)
-  const sunLight = new THREE.PointLight(0xffffff, 2, point_light_limit);
+  const sunLight = new THREE.PointLight(0xffffff, 1.5, point_light_limit);
   sunLight.castShadow = true;
-  sunLight.shadow.mapSize.width = 2048; // higher value = better quality
+  sunLight.shadow.mapSize.width = 2048; 
   sunLight.shadow.mapSize.height = 2048;
   sunLight.layers.enableAll();  
   scene.add(sunLight);
@@ -512,11 +514,24 @@ const createScene = (view, isshow) => {
     const x = distanceConst * dplanet.distance;
     const ring = dplanet.ring;
     const planetGeometry = new THREE.SphereGeometry(size, 50, 50);
-    const planetMaterial = new THREE.MeshStandardMaterial({
-      map: planetTexture,
-       roughness: 1,     // more diffuse, less shiny
-       metalness: 0, // no metallic reflection
-    });
+    let planetMaterial;
+    if (dplanet.planet_name === "earth") {
+      planetMaterial = new THREE.MeshStandardMaterial({
+        map: planetTexture,
+        normalMap: earthNormalMap,            
+        roughness: 1,
+        metalness: 0,
+        emissive: new THREE.Color(0xffffff),
+        emissiveMap: earthNightMap,      
+        emissiveIntensity: 0.8,         
+      });
+    } else {
+      planetMaterial = new THREE.MeshStandardMaterial({
+        map: planetTexture,
+        roughness: 1,
+        metalness: 0,
+      });
+    }
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
     planet.castShadow = true;
     planet.receiveShadow = false;
@@ -541,7 +556,7 @@ const createScene = (view, isshow) => {
       ringMesh.receiveShadow = true;
       ringMesh.castShadow = false;
       ringMesh.rotation.x = -0.5 * Math.PI;
-      ringMesh.rotation.y = -0.1 * Math.PI;
+      ringMesh.rotation.y = -0.01 * Math.PI;
       planetObj.add(ringMesh);
     }
 

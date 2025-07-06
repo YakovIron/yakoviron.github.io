@@ -68,6 +68,11 @@
     <link rel="stylesheet" href="style/style.css" />
   </head>
   <body>
+    <div id="loading-screen">
+      <div class="loader"></div>
+      <div class="loading-text">Loading...</div>
+    </div>
+
     <div class="created-by">
       <span>Created by <a href="https://www.yakoviron.com">Yakov Iron</a></span>
     </div>
@@ -126,5 +131,13 @@
       </div>
     </div>
     <script src="./js/script.js" type="module"></script>
+    <script>
+      window.addEventListener('load', () => {
+        const loader = document.getElementById('loading-screen');
+        if (loader) {
+          loader.style.display = 'none';
+        }
+      });
+    </script>
   </body>
 </html>
