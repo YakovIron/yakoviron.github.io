@@ -463,6 +463,7 @@ const createScene = (view, isshow) => {
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.width = 2048; // higher value = better quality
   sunLight.shadow.mapSize.height = 2048;
+  sunLight.layers.enableAll();  
   scene.add(sunLight);
   //////////////////////////////////////
 
@@ -503,7 +504,9 @@ const createScene = (view, isshow) => {
   //////////////////////////////////////
   /////////////////////////////////////
   //SECTION create planet
-  const genratePlanet = (dplanet) => {
+  const genratePlanet = (dplanet, planetIndex) => {
+    const layerId = planetIndex + 1; 
+
     const size = sizeConst * dplanet.radius;
     const planetTexture = dplanet.name;
     const x = distanceConst * dplanet.distance;
@@ -516,6 +519,7 @@ const createScene = (view, isshow) => {
     });
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
     planet.castShadow = true;
+    planet.receiveShadow = false;
     const planetObj = new THREE.Object3D();
     planet.position.set(x, 0, 0);
     if (ring) {
@@ -540,7 +544,7 @@ const createScene = (view, isshow) => {
       ringMesh.rotation.y = -0.1 * Math.PI;
       planetObj.add(ringMesh);
     }
-    
+
     scene.add(planetObj);
 
     if (dplanet.moons && dplanet.moons.length) {
@@ -587,8 +591,8 @@ const createScene = (view, isshow) => {
     };
   };
 
-  planetData[view].forEach((dplanet) => {
-    const { planetObj, planet } = genratePlanet(dplanet);
+  planetData[view].forEach((dplanet, index) => {
+    const { planetObj, planet } = genratePlanet(dplanet, index);
     dplanet.planetObj = planetObj;
     dplanet.planet = planet;
     planetData.store[view][dplanet.planet_name] = planet;
