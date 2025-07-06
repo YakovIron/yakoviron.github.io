@@ -1,0 +1,21 @@
+{
+  "name": "Yakov's Space Simulator",
+  "short_name": "Space Simulator",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000",
+  "theme_color": "#000",
+  "description": "A space sinmulator that allows you to explore the solar system in 3D.",
+  "icons": [
+    {
+      "src": "/yakovgram_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/yakovgram_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
