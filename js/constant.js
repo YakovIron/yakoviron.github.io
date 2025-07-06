@@ -9,6 +9,7 @@ export const basicInformation = {
     dayLength: "25 days (at the equator)",
     yearLength: "365.25 Earth days",
     missions: 0,
+    moons: 0
   },
   mercury: {
     description:
@@ -20,6 +21,7 @@ export const basicInformation = {
     dayLength: "4222.6 hours",
     yearLength: "88 Earth days",
     missions: 4,
+    moons: 0
   },
   venus: {
     description:
@@ -31,6 +33,7 @@ export const basicInformation = {
     dayLength: "2802 hours",
     yearLength: "225 Earth days",
     missions: 43,
+    moons: 0
   },
   earth: {
     description:
@@ -42,6 +45,7 @@ export const basicInformation = {
     dayLength: "24 hours",
     yearLength: "365.25 days",
     missions: 0,
+    moons: 1
   },
   mars: {
     description:
@@ -53,6 +57,7 @@ export const basicInformation = {
     dayLength: "24.6 hours",
     yearLength: "687 Earth days",
     missions: 60,
+    moons: 0
   },
   jupiter: {
     description:
@@ -64,6 +69,7 @@ export const basicInformation = {
     dayLength: "9.9 hours",
     yearLength: "11.9 Earth years",
     missions: 9,
+    moons: 0
   },
   saturn: {
     description:
@@ -75,6 +81,7 @@ export const basicInformation = {
     dayLength: "10.7 hours",
     yearLength: "29.5 Earth years",
     missions: 7,
+    moons: 0
   },
   uranus: {
     description:
@@ -86,6 +93,7 @@ export const basicInformation = {
     dayLength: "17.2 hours",
     yearLength: "84 Earth years",
     missions: 2,
+    moons: 0
   },
   neptune: {
     description:
@@ -97,6 +105,7 @@ export const basicInformation = {
     dayLength: "16.1 hours",
     yearLength: "164.8 Earth years",
     missions: 1,
+    moons: 0
   },
   pluto: {
     description:
@@ -108,6 +117,7 @@ export const basicInformation = {
     dayLength: "153.3 hours",
     yearLength: "248 Earth years",
     missions: 1,
+    moons: 0
   },
 };
 export const constant = {

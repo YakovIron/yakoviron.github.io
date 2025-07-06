@@ -32,6 +32,8 @@ const neptuneTexture = getTexture("neptune.jpg");
 const plutoTexture = getTexture("pluto.jpg");
 const saturnRingTexture = getTexture("saturn_ring.png");
 const uranusRingTexture = getTexture("uranus_ring.png");
+//moons
+const moonTexture = getTexture("moon.jpg");
 //////////////////////////////////////
 
 //////////////////////////////////////
@@ -61,6 +63,15 @@ const planetData = {
       name: earthTexture,
       rsas: 0.01,
       srs: 0.02,
+      moons: [
+        {
+          radius: 1.6,
+          distance: 10,
+          texture: moonTexture,
+          rsas: 0.02,   // speed of orbit around planet
+          srs: 0.01     // self-rotation speed
+        }
+      ]
     },
     {
       radius: 4,
@@ -145,6 +156,15 @@ const planetData = {
       name: earthTexture,
       rsas: 0.00029, // Adjusted rotating speed around the sun for Earth
       srs: 1.0,
+      moons: [
+        {
+          radius: 1.6,
+          distance: 10,
+          texture: moonTexture,
+          rsas: 0.02,   // speed of orbit around planet
+          srs: 0.00     // self-rotation speed
+        }
+      ]
     },
     {
       radius: 3.3895,
@@ -235,6 +255,8 @@ const createScene = (view, isshow) => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
   renderer.domElement.style.display = isshow;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
   //////////////////////////////////////
 
   //////////////////////////////////////
@@ -318,50 +340,64 @@ const createScene = (view, isshow) => {
   //////////////////////////////////////
     
   const nebulaCount = 10;
-  const textureLoader = new THREE.TextureLoader();
-  const nebulaTexture = textureLoader.load('./textures/nebula.png'); 
-  // Use a good PNG with alpha: cloud, noise, or hand-painted nebula shape
+  const nebulaLayers = 20; // number of circles per nebula
 
   for (let i = 0; i < nebulaCount; i++) {
-    const size = 2000 + Math.random() * 2000; // large and fluffy
-    const nebulaGeometry = new THREE.PlaneGeometry(size, size);
-    
-    const nebulaMaterial = new THREE.MeshBasicMaterial({
-      map: nebulaTexture,
-      color: new THREE.Color(
-        0.5 + Math.random() * 0.5, // brighten up: avoid very dark nebulae
-        0.5 + Math.random() * 0.5,
-        0.5 + Math.random() * 0.5
-      ),
-      transparent: true,
-      opacity: 0.2 + Math.random() * 0.3,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-    });
+    const nebulaGroup = new THREE.Group();
 
-    const nebulaMesh = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
-
-    // Position far away in the star sphere
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos((Math.random() * 2) - 1);
-    const distance = radius - 2000 - Math.random() * 5000;
-
-    const x = distance * Math.sin(phi) * Math.cos(theta);
-    const y = distance * Math.sin(phi) * Math.sin(theta);
-    const z = distance * Math.cos(phi);
-
-    nebulaMesh.position.set(x, y, z);
-
-    // Random rotation so planes don't all face the same way
-    nebulaMesh.rotation.set(
-      Math.random() * Math.PI,
-      Math.random() * Math.PI,
-      Math.random() * Math.PI
+    // Random nebula base color
+    const baseColor = new THREE.Color(
+      0.5 + Math.random() * 0.5,
+      0.5 + Math.random() * 0.5,
+      0.5 + Math.random() * 0.5
     );
 
-    scene.add(nebulaMesh);
+    for (let j = 0; j < nebulaLayers; j++) {
+      const size = 800 + Math.random() * 1200;
+
+      const nebulaGeometry = new THREE.PlaneGeometry(size, size);
+      const nebulaMaterial = new THREE.MeshBasicMaterial({
+        color: baseColor.clone().multiplyScalar(0.8 + Math.random() * 0.4),
+        transparent: true,
+        opacity: 0.02 + Math.random() * 0.08, // very low opacity
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+      });
+
+      const nebulaMesh = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
+
+      // Randomly position layer around the center to create irregularity
+      nebulaMesh.position.set(
+        (Math.random() - 0.5) * 1000,
+        (Math.random() - 0.5) * 1000,
+        (Math.random() - 0.5) * 1000
+      );
+
+      // Random rotation
+      nebulaMesh.rotation.set(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        Math.random() * Math.PI
+      );
+
+      nebulaGroup.add(nebulaMesh);
+    }
+
+    // Position the whole nebulaGroup far away
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos((Math.random() * 2) - 1);
+    const distance = radius - 2000 - Math.random() * 7000;
+
+    nebulaGroup.position.set(
+      distance * Math.sin(phi) * Math.cos(theta),
+      distance * Math.sin(phi) * Math.sin(theta),
+      distance * Math.cos(phi)
+    );
+
+    scene.add(nebulaGroup);
   }
+
 
 
   //////////////////////////////////////
@@ -389,13 +425,16 @@ const createScene = (view, isshow) => {
 
   //////////////////////////////////////
   //NOTE - sun light (point light)
-  const sunLight = new THREE.PointLight(0xffffff, 3, point_light_limit);
+  const sunLight = new THREE.PointLight(0xffffff, 2, point_light_limit);
+  sunLight.castShadow = true;
+  sunLight.shadow.mapSize.width = 2048; // higher value = better quality
+  sunLight.shadow.mapSize.height = 2048;
   scene.add(sunLight);
   //////////////////////////////////////
 
   //////////////////////////////////////
   //NOTE - ambient light
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
   scene.add(ambientLight);
   //////////////////////////////////////
 
@@ -438,8 +477,11 @@ const createScene = (view, isshow) => {
     const planetGeometry = new THREE.SphereGeometry(size, 50, 50);
     const planetMaterial = new THREE.MeshStandardMaterial({
       map: planetTexture,
+       roughness: 1,     // more diffuse, less shiny
+       metalness: 0, // no metallic reflection
     });
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+    planet.castShadow = true;
     const planetObj = new THREE.Object3D();
     planet.position.set(x, 0, 0);
     if (ring) {
@@ -448,16 +490,46 @@ const createScene = (view, isshow) => {
         sizeConst * ring.outerRadius,
         32
       );
-      const ringMat = new THREE.MeshBasicMaterial({
+      const ringMat = new THREE.MeshStandardMaterial({
         map: ring.ringmat,
         side: THREE.DoubleSide,
+        roughness: 1,
+        metalness: 0,
+        transparent: true,
+        alphaTest: 0.5,
       });
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      planetObj.add(ringMesh);
       ringMesh.position.set(x, 0, 0);
+      ringMesh.receiveShadow = true;
+      ringMesh.castShadow = false;
       ringMesh.rotation.x = -0.5 * Math.PI;
+      ringMesh.rotation.y = -0.1 * Math.PI;
+      planetObj.add(ringMesh);
     }
+    
     scene.add(planetObj);
+
+    if (dplanet.moons && dplanet.moons.length) {
+      dplanet.moons.forEach((moonData) => {
+        const moonSize = sizeConst * moonData.radius;
+        const moonDistance = moonData.distance; // relative to planet
+        const moonGeo = new THREE.SphereGeometry(moonSize, 32, 32);
+        const moonMat = new THREE.MeshStandardMaterial({ map: moonData.texture });
+        const moon = new THREE.Mesh(moonGeo, moonMat);
+
+        // Create a pivot object for moon orbit
+        const moonPivot = new THREE.Object3D();
+        moon.position.set(moonDistance, 0, 0);
+        moonPivot.add(moon);
+
+        // Store pivot and speeds for animation
+        moonData.moonPivot = moonPivot;
+        moonData.moonMesh = moon;
+
+        // Add pivot to the planet (so moon orbits the planet)
+        planet.add(moonPivot);
+      });
+    }
 
     planetObj.add(planet);
     createLineLoopWithMesh(x, 0xffffff, 3);
@@ -509,6 +581,14 @@ const createScene = (view, isshow) => {
         planetObj.rotateY(options.speed * rsas * rotaingSpeedAroundSunConst);
         planet.rotateY(options.speed * srs * selfRotateConst);
       });
+      planetData[view].forEach(({ planet, moons }) => {
+        if (moons) {
+          moons.forEach((moon) => {
+            moon.moonPivot.rotateY(options.speed * moon.rsas * rotaingSpeedAroundSunConst);
+            moon.moonMesh.rotateY(options.speed * moon.srs * selfRotateConst);
+          });
+        }
+      });
       var innerBodyGlobalPosition = new THREE.Vector3();
       planetData.store[view][options.focus].getWorldPosition(
         innerBodyGlobalPosition
@@ -532,7 +612,7 @@ const scene = {
   real: createScene("real", "block"),
   approx: createScene("approx", "none"),
 };
-showInfo("sun");
+showInfo("earth");
 //////////////////////////////////////
 
 //////////////////////////////////////
