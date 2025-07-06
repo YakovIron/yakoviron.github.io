@@ -34,6 +34,8 @@ const saturnRingTexture = getTexture("saturn_ring.png");
 const uranusRingTexture = getTexture("uranus_ring.png");
 //moons
 const moonTexture = getTexture("moon.jpg");
+const phobosTexture = getTexture("phobos.jpg");
+const deimosTexture = getTexture("demios.jpg");
 //////////////////////////////////////
 
 //////////////////////////////////////
@@ -80,6 +82,22 @@ const planetData = {
       name: marsTexture,
       rsas: 0.008,
       srs: 0.018,
+      moons: [
+        {
+          radius: 0.05, // ~11 km
+          distance: 0.0094, 
+          texture: phobosTexture,
+          rsap: 0.0057, // rotation speed around Mars (arbitrary value, adjust for effect)
+          srs: 0.319 // self-rotation speed (arbitrary, Phobos is tidally locked)
+        },
+        {
+          radius: 0.1, // ~6 km
+          distance: 0.0235, 
+          texture: deimosTexture,
+          rsap: 0.003, // rotation speed around Mars (arbitrary)
+          srs: 1.26 // self-rotation speed (also arbitrary)
+        }
+      ]
     },
     {
       radius: 12,
@@ -163,7 +181,7 @@ const planetData = {
           texture: moonTexture,
           rsas: 0.02,   // speed of orbit around planet
           srs: 0.00     // self-rotation speed
-        }
+        },
       ]
     },
     {
@@ -171,8 +189,24 @@ const planetData = {
       distance: 227.9,
       planet_name: "mars",
       name: marsTexture,
-      rsas: 0.00024, // Adjusted rotating speed around the sun for Mars
+      rsas: 0.00024, // rotating speed around the sun
       srs: 1.03,
+      moons: [
+        {
+          radius: 1.03,
+          distance: 10,
+          texture: phobosTexture,
+          rsas: 0.02,   
+          srs: 0.00   
+        },
+        {
+          radius: 1.1,
+          distance: 10,
+          texture: deimosTexture,
+          rsas: 0.02,   
+          srs: 0.00   
+        },
+      ]
     },
     {
       radius: 69.911,
@@ -510,23 +544,37 @@ const createScene = (view, isshow) => {
     scene.add(planetObj);
 
     if (dplanet.moons && dplanet.moons.length) {
-      dplanet.moons.forEach((moonData) => {
-        const moonSize = sizeConst * moonData.radius;
-        const moonDistance = moonData.distance; // relative to planet
+      dplanet.moons.forEach((moonData, moonIndex) => {
+        const moonSize = sizeConst * moonData.radius;   // Scale moon
+        const moonDistance = moonData.distance;         // Distance from planet
         const moonGeo = new THREE.SphereGeometry(moonSize, 32, 32);
         const moonMat = new THREE.MeshStandardMaterial({ map: moonData.texture });
         const moon = new THREE.Mesh(moonGeo, moonMat);
 
-        // Create a pivot object for moon orbit
+        // Create a pivot for orbiting
         const moonPivot = new THREE.Object3D();
-        moon.position.set(moonDistance, 0, 0);
+
+        // Tilt orbit: add small inclination to each moon
+        const inclination = Math.random() * 0.5 - 0.25; // random tilt around X
+        const ascendingNode = Math.random() * Math.PI * 2; // random rotation around Y
+        moonPivot.rotation.x = inclination;
+        moonPivot.rotation.y = ascendingNode;
+
+        // Initial phase offset so moons start at different positions
+        const initialAngle = Math.random() * Math.PI * 2;
+        moon.position.set(
+          moonDistance * Math.cos(initialAngle),
+          0,
+          moonDistance * Math.sin(initialAngle)
+        );
+
         moonPivot.add(moon);
 
-        // Store pivot and speeds for animation
+        // Store pivot & mesh for animation
         moonData.moonPivot = moonPivot;
         moonData.moonMesh = moon;
 
-        // Add pivot to the planet (so moon orbits the planet)
+        // Add pivot to the planet so it orbits the planet
         planet.add(moonPivot);
       });
     }
