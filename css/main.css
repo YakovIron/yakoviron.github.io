@@ -15,6 +15,9 @@
     box-sizing: border-box;
 }
 
+/* avoid any horizontal overflow on small devices */
+html, body { max-width: 100%; overflow-x: hidden; }
+
 body {
     font-family: 'Assistant';
     /* vertical gradient from blue (top) to black (bottom) */
@@ -39,6 +42,11 @@ body {
     position: relative;
     z-index: 5; /* keep content above animated background */
 }
+
+/* prevent header overlap with fixed header */
+:root { --site-header-height: 60px; }
+body { padding-top: var(--site-header-height); }
+main, .apps-page, .container { padding-top: calc(var(--site-header-height) + 8px); }
 
 /* Fountain sprite background */
 .fountain-bg {
@@ -104,6 +112,9 @@ body {
         margin: 12px;
     }
 
+    /* reduce heavy blend modes on mobile */
+    .fountain-bg { mix-blend-mode: normal; }
+
     /* buttons: stack and be comfortably tappable */
     .buttons {
         display: flex;
@@ -132,6 +143,44 @@ body {
     h1 { font-size: 1.4rem; }
     .subtitle { font-size: 0.95rem; }
     .btn { font-size: 0.95rem; padding: 10px 12px; }
+}
+
+.site-header {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: var(--site-header-height);
+    backdrop-filter: blur(6px);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.22));
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    z-index: 9999;
+}
+.site-header .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: 100%;
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; }
+.brand-logo { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; }
+.brand-title { font-weight: 700; font-size: 1.05rem; }
+.site-nav { display: flex; gap: 12px; align-items: center; }
+.nav-link { color: #fff; text-decoration: none; padding: 8px 10px; border-radius: 8px; transition: background .15s ease; }
+.nav-link:hover, .nav-link:focus { background: rgba(255,255,255,0.03); }
+
+@media (max-width: 720px) {
+    .brand-title { display: none; }
+    .site-nav { gap: 8px; }
+    .nav-link { padding: 8px; font-size: 0.95rem; }
+}
+
+@media (max-width: 420px) {
+    .site-header .header-inner { padding: 8px 12px; }
 }
 
 @keyframes flame-float {
@@ -196,8 +245,8 @@ h1 {
 .btn {
     display: inline-block;
     background-color: rgb(0, 0, 0);
-    border: rgb(94, 94, 94) solid 4px;
-    color: #686868;
+    border: rgb(238, 238, 238) solid 4px;
+    color: #ffffff;
     text-decoration: none;
     padding: 12px 24px;
     margin: 0 8px 12px;
@@ -250,4 +299,94 @@ i {
     vertical-align: bottom;
     margin-bottom: 4px;
     font-size: 2.5rem;
+}
+
+/* Apps portal styles */
+.apps-page { color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+.apps-grid { display: grid; gap: 18px; padding-block: 24px; padding-inline: 24px; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+.app-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 16px; border-radius: 12px; text-align: center; color: #fff; text-decoration: none; transition: transform .18s ease, box-shadow .18s ease, background-color .15s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; overflow: hidden; word-break: break-word; align-items: stretch; }
+.app-card:hover, .app-card:focus { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: rgba(255,255,255,0.03); }
+.app-icon { width: 64px; height: 64px; max-width: 100%; object-fit: cover; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.6) inset; display: block; margin: 0 auto; }
+
+/* prevent title/description from overflowing */
+.app-card h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 6px 0 0; }
+.app-card p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; color: #d0d0d0; margin: 0 0 2px; line-clamp: 2; -webkit-line-clamp: 2; }
+.app-card h3 { font-size: 1.05rem; margin: 6px 0 0; }
+.app-card p { font-size: 0.9rem; color: #d0d0d0; margin: 0 0 2px; }
+
+@media (max-width: 600px) {
+    .apps-grid { padding: 12px; gap: 12px; }
+    .app-icon { width: 56px; height: 56px; }
+}
+
+/* tighter layout for very small screens to avoid overflow */
+@media (max-width: 480px) {
+    .apps-grid { grid-template-columns: repeat(2, 1fr); padding-inline: 12px; grid-auto-rows: auto; }
+    .app-card { padding: 12px; }
+    .app-icon { width: 48px; height: 48px; }
+    .app-card h3 { font-size: 1rem; }
+    .app-card p { font-size: 0.85rem; }
+    /* ensure the search input never overflows */
+    #apps-search { box-sizing: border-box; width: 100%; }
+}
+
+@media (max-width: 360px) {
+    .apps-grid { grid-template-columns: repeat(2, 1fr); padding-inline: 8px; gap: 8px; }
+    .app-icon { width: 40px; height: 40px; }
+    .app-card h3 { font-size: 0.95rem; }
+    .app-card p { font-size: 0.8rem; }
+}
+
+/* Search wrap and input */
+.search-wrap { max-width: 680px; width: 100%; margin: 8px auto 0; padding-inline: 12px; box-sizing: border-box; }
+.apps-search { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: #fff; box-sizing: border-box; }
+
+@media (max-width: 480px) {
+    .search-wrap { padding-inline: 6px; }
+    .apps-search { padding: 10px; }
+}
+
+/* Modal styles for apps portal */
+.app-modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: none; /* shown via JS */
+    align-items: center;
+    justify-content: center;
+    background: rgba(4,8,14,0.6);
+    z-index: 10000;
+    padding: 20px;
+}
+.app-modal-panel {
+    background: linear-gradient(180deg, rgb(29, 29, 29), rgb(0, 0, 0));
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 680px;
+    width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    text-align: left;
+    color: #fff;
+    position: relative;
+}
+.app-modal-panel .app-modal-close {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+.app-modal-icon { width: 72px; height: 72px; border-radius: 10px; display: block; margin: 6px 0 12px; }
+.app-modal-panel h2 { margin: 6px 0 8px; font-size: 1.25rem; }
+.app-modal-desc { color: #d6d6d6; margin-bottom: 14px; }
+.app-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.app-modal-actions .btn { color: white; border-color:white; padding: 10px 14px; border-radius: 10px; }
+
+@media (max-width: 480px) {
+    .app-modal-panel { padding: 14px; }
+    .app-modal-icon { width: 56px; height: 56px; }
+    .app-modal-panel h2 { font-size: 1.05rem; }
 }

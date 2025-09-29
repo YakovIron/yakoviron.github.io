@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Tips",
+    "url": "https://tips.yakoviron.com",
+    "icon": "image/icons/tips_app.png",
+    "description": "A fun useless tips app."
+  },
+  {
+    "name": "Ironnet",
+    "url": "https://ironnet.yakoviron.com",
+    "icon": "image/icons/PlainLogo192.png",
+    "description": "Personal network and links."
+  },
+  {
+    "name": "Orbit",
+    "url": "https://orbit.yakoviron.com",
+    "icon": "image/icons/orbit_192.png",
+    "description": "A Chatting App."
+  },
+  {
+    "name": "Yakovgram",
+    "url": "https://yakovgram.yakoviron.com",
+    "icon": "image/icons/yakovgram_192.png",
+    "description": "A Social Media App for yakov fans."
+  },
+  {
+    "name": "Yakovhub",
+    "url": "https://yakovhub.yakoviron.com",
+    "icon": "image/icons/yakovhub_icon.png",
+    "description": "An app for everything yakov."
+  }
+]
