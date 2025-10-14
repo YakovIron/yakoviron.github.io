@@ -24,6 +24,12 @@
     "description": "A Social Media App for yakov fans."
   },
   {
+    "name": "Brainwave",
+    "url": "https://brainwave.yakoviron.com",
+    "icon": "image/icons/brainwave_app_icon.png",
+    "description": "An online music player app."
+  },
+  {
     "name": "Yakovhub",
     "url": "https://yakovhub.yakoviron.com",
     "icon": "image/icons/yakovhub_icon.png",
